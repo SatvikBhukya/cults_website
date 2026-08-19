@@ -6,6 +6,7 @@ import { EVENTS_REGISTRY } from './src/config/events.ts';
 import { fetchEventData, fetchAllEventsDatabase, fetchOverviewMetrics } from './server/sheetFetcher.ts';
 import { fetchLivePOCs } from './server/pocFetcher.ts';
 
+// Single Express server that serves the API and the Vite dev SPA on port 3000.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
