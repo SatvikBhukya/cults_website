@@ -6,10 +6,12 @@ import { EVENTS_REGISTRY } from './src/config/events.ts';
 import { fetchEventData, fetchAllEventsDatabase, fetchOverviewMetrics } from './server/sheetFetcher.ts';
 import { fetchLivePOCs } from './server/pocFetcher.ts';
 
+// Single Express server that serves the API and the Vite dev SPA on port 3000.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function startServer() {
+  // Serves both the API routes and the Vite SPA on a single port.
   const app = express();
   const PORT = 3000;
 
@@ -111,9 +113,25 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`EVENTS : CULTS Server running on http://localhost:${PORT}`);
-  });
+  const startListening = (attempt = 0) => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`EVENTS : CULTS Server running on http://localhost:${PORT}`);
+    });
+
+    server.on('error', (err: NodeJS.ErrnoException) => {
+      if (err.code === 'EADDRINUSE' && attempt < 10) {
+        console.warn(
+          `[Server] Port ${PORT} in use (likely a previous instance shutting down). Retrying in 1s... (attempt ${attempt + 1})`
+        );
+        setTimeout(() => startListening(attempt + 1), 1000);
+      } else {
+        console.error('[Server] Fatal listen error:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  startListening();
 }
 
 startServer().catch((err) => {

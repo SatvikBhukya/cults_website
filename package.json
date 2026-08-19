@@ -2,6 +2,7 @@
   "name": "admin-events-cults",
   "private": true,
   "version": "1.0.0",
+  "description": "ARB '26 CULTS events admin dashboard with live Google Sheets registration data.",
   "type": "module",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx watch server.ts",
